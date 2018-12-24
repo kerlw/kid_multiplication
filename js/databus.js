@@ -20,9 +20,9 @@ export default class DataBus {
     reset() {
         this.frame = 0
         this.score = 0
-        this.bullets = []
-        this.enemys = []
-        this.animations = []
+        this.speed = 2
+        this.expressions = []
+        // this.animations = []
         this.gameOver = false
     }
 
@@ -39,14 +39,11 @@ export default class DataBus {
     }
 
     /**
-     * 回收子弹，进入对象池
-     * 此后不进入帧循环
+     * 回收表达式
      */
-    removeBullets(bullet) {
-        let temp = this.bullets.shift()
+    removeExpression(expression) {
+        let temp = this.expressions.shift()
 
         temp.visible = false
-
-        this.pool.recover('bullet', bullet)
     }
 }
