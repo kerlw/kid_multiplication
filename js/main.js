@@ -1,84 +1,82 @@
-import DataBus from './databus'
-import Expression from './game/expression'
+import Phaser from 'libs/phaser-wx.js'
 
-let ctx = canvas.getContext('2d')
-let databus = new DataBus()
+// 保存原始的canvas
+wx.originContext = canvas.getContext('2d');
 
+/**
+ * 尺寸
+ * @type {{w: number, h: number}}
+ */
+let size = { w: 375, h: 667 }
+let screenSize = { w: 375, h: 667 }
+
+let game
+
+/**
+ * 游戏主函数
+ */
 export default class Main {
+
+    /**
+     * 构造
+     */
     constructor() {
-        // 维护当前requestAnimationFrame的id
-        this.aniId = 0
+        // 配置参数
+        const conf = {
+            width: size.w,
+            height: size.h,
+            canvas: canvas,
+            //context: canvas.getContext('webgl',  { alpha: false, depth: true, stencil: true, antialias: true, premultipliedAlpha: false, preserveDrawingBuffer: true }),
+            renderer: Phaser.CANVAS,
+            parent: 'phaser',
+            transparent: false,
+            antialias: false,
+            state: { preload: this.preload, create: this.create, update: this.update, pointer: this.pointDown },
+            scaleMode: Phaser.ScaleManager.EXACT_FIT
+        };
 
+        // 创建游戏
+        game = new Phaser.Game(conf)
 
-        this.bindLoop = this.loop.bind(this)
-        this.hasEventBind = false
-
-        // 清除上一局的动画
-        window.cancelAnimationFrame(this.aniId);
-
-        this.aniId = window.requestAnimationFrame(
-            this.bindLoop,
-            canvas
-        )
+        // 获取尺寸
+        screenSize.w = window.innerWidth
+        screenSize.h = window.innerHeight
+        console.log('屏幕尺寸: ', screenSize.w, 'x', screenSize.h)
     }
 
     /**
-     * canvas重绘函数
-     * 每一帧重新绘制所有的需要展示的元素
+     * 预载入阶段
      */
-    render() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
+    preload() {
+        // 载入 SpriteSheet 和 图片
+    }
 
-        // this.bg.render(ctx)
+    /**
+     * 创建阶段
+     */
+    create() {
+        // 显示文本
+        const text = game.add.text(5, 5, 'Phaser Test', { fill: 'white' });
+        text.smoothed = false;
 
-        databus.expressions
-            .forEach((item) => {
-                item.drawToCanvas(ctx)
-            })
+        // 触摸监听
+        game.input.onDown.add(pointDown, this);
+        game.input.onUp.add(pointUp, this);
 
-        // this.gameinfo.renderGameScore(ctx, databus.score)
+        function pointDown(p) {
+            if (p.clientX / size.w > 0.5) {
+            } else {
+            }
+        }
 
-        // 游戏结束停止帧循环
-        if (databus.gameOver) {
-        //     this.gameinfo.renderGameOver(ctx, databus.score)
-        //
-        //     if (!this.hasEventBind) {
-        //         this.hasEventBind = true
-        //         this.touchHandler = this.touchEventHandler.bind(this)
-        //         canvas.addEventListener('touchstart', this.touchHandler)
-        //     }
+        function pointUp(p) {
         }
     }
 
-    // 游戏逻辑更新主函数
+    /**
+     * 更新 Update 循环
+     */
     update() {
-        if (databus.gameOver)
-            return;
-
-        // this.bg.update()
-
-        databus.expressions
-            .forEach((item) => {
-                item.update()
-            })
-
-        if (databus.frame % 20 === 0) {
-            Expression.randomExpression()
-        }
+        // console.log("update ")
     }
-
-    // 实现游戏帧循环
-    loop() {
-        databus.frame++
-
-        this.update()
-        this.render()
-
-        this.aniId = window.requestAnimationFrame(
-            this.bindLoop,
-            canvas
-        )
-    }
-
-
 }
