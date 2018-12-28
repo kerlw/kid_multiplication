@@ -1,4 +1,5 @@
 import Phaser from 'libs/phaser-wx.js'
+import Common from 'atlas/common.js'
 
 // 保存原始的canvas
 wx.originContext = canvas.getContext('2d');
@@ -49,6 +50,7 @@ export default class Main {
      */
     preload() {
         // 载入 SpriteSheet 和 图片
+        game.load.atlas('common', 'assets/images/common.png', null, Common)
     }
 
     /**
@@ -58,6 +60,15 @@ export default class Main {
         // 显示文本
         const text = game.add.text(5, 5, 'Phaser Test', { fill: 'white' });
         text.smoothed = false;
+
+        const btn = game.add.button(100, 100, 'common', onBtnClicked, this, 'button', 'button', 'button_pressed', 'button')
+        // btn.crop(new Phaser.Rectangle(16,16,1,1), true)
+        btn.map_number = 1
+        btn.width = 200
+        // btn.height = 200
+        // const btn = game.add.sprite(0, 16, 'common', 'button');
+        btn.inputEnabled = true
+        // btn.events.onInputDown.add(onBtnClicked, {key: 1})
 
         // 触摸监听
         game.input.onDown.add(pointDown, this);
@@ -70,6 +81,10 @@ export default class Main {
         }
 
         function pointUp(p) {
+        }
+
+        function onBtnClicked(...args) {
+            console.log(...args, args[0].map_number)
         }
     }
 
